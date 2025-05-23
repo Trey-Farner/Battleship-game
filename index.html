@@ -12,7 +12,8 @@
         <h1 id="title">Battleship</h1>
         <h2 id="rules-title">Rules</h2>
         <p>Guess where the enemy battleship is by clicking on a tile and seeing what the result is.</p>
-        <button type="button" id="start-btn" class="btn">Start Game</button>
+        <button type="button" id="start-btn" class="btn">Easy</button>
+        <button type="button" id="medium-btn" class="btn">Medium</button>
     </div>
 
     <div class="game-container" id="game-container"></div>
@@ -23,6 +24,13 @@
         <p id="round-count"></p>
         <button id="reset-btn" class="btn">Reset</button>
     </div>
+
+    <!--This will be the newly generated 5x5 grid-->
+
+    <h1 class="place-ship" style="display: none">Place Your Ship</h1>
+    <div class="med-container" id="med-container"></div>
+    <img src="./images/Little Ship.webp" alt="">
+
 
     <script src="./script.js"></script>
 </body>
