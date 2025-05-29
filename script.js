@@ -46,6 +46,19 @@ menuBtn.addEventListener("click", () => window.location.reload())
 let medGrid = []
 let row = 5
 let col = 5
+const ship = document.getElementById("ship")
+let shipSelect = false
+let shipPlacement = []
+
+ship.addEventListener("click", () => {
+    shipSelect ? shipSelect = false : shipSelect = true
+    if (shipSelect) {
+        ship.style.border = ".5rem solid orange"
+    } else {
+        ship.style.border = ".5rem solid #ffffff00"
+    }
+})
+
 
 mediumBtn.addEventListener("click", () => {
     let val = 0
@@ -59,12 +72,33 @@ mediumBtn.addEventListener("click", () => {
             mediumGrid.appendChild(tile)
             tile.id = `tile-${i}-${j}`
             tile.classList.add("med-tiles")
+            tile.addEventListener("click", () => {
+                if (shipSelect) {
+                    if (shipPlacement.length === 0) {
+                        shipPlacement.push({
+                            name: "small-ship",
+                            coordinates: [[medGrid[i][i], medGrid[j][j]], [medGrid[i][i], medGrid[j][j + 1]]]
+                        })
+                    } else {
+                        shipPlacement = []
+                        shipPlacement.push({
+                            name: "small-ship",
+                            coordinates: [[medGrid[i][i], medGrid[j][j]], [medGrid[i][i], medGrid[j][j + 1]]]
+                        })
+                    }
+                    console.log(shipPlacement[0].coordinates[0])
+                    document.getElementById(`tile-${shipPlacement[0].coordinates[0][0]}-${shipPlacement[0].coordinates[0][1]}`).classList.add("red")
+                    document.getElementById(`tile-${shipPlacement[0].coordinates[0][0]}-${shipPlacement[0].coordinates[0][1]}`).classList.add("red")
+
+
+
+                    // tile.classList.add("red")
+                    // document.getElementById(`tile-${medGrid[i][i]}-${medGrid[j][j + 1]}`).classList.add("grey")
+                }
+            })
         }
     }
     mediumGrid.style.display = "grid"
-    console.log(medGrid)
 })
 
-tile.addEventListener("click", () => {
-    
-})
+console.log(loadScreen.className)
