@@ -123,32 +123,3 @@ h3 {
 }
 
 /* medium level classes */
-
-.med-container {
-    width: 50%;
-    max-width: 700px;
-    aspect-ratio: 1 / 1;
-    display: grid;
-    grid-template: repeat(5, 1fr) / repeat(5, 1fr);
-    border: 2px solid #000;
-}
-
-.med-tiles {
-    background-color: #ffffff;
-    border: 2px solid #000;
-}
-
-.red {
-    background-color: red;
-}
-
-.grey {
-    background-color: grey;
-}
-
-.ship {
-    border-radius: 10px;
-    width: 20%;
-    box-sizing: border-box;
-    border: .5rem solid #ffffff00;
-}
