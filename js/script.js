@@ -38,3 +38,5 @@ resetBtn.addEventListener("click", () => {
     answer = Math.floor(Math.random() * 8) + 1
 })
 menuBtn.addEventListener("click", () => window.location.reload())
+
+//Medium Level code-- I have to generate the grid here
