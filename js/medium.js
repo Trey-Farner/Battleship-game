@@ -9,6 +9,8 @@ let col = 5
 const ship = document.getElementById("ship")
 let shipSelect = false
 let shipPlacement = []
+let numberOfHits = 0
+let winningScore = 2
 const invalidPlacement = document.getElementById("invalid-placement")
 
 
@@ -115,16 +117,22 @@ const startGame = () => {
             computerGridContainer.appendChild(computertile)
             computertile.id = `tile-${i}-${j}`
             computertile.classList.add("med-tiles")
-
+            
             //Selecting enemy tiles
             computertile.addEventListener("click", () => {
-                if (`tile-${computerSelection[0][0]}-${computerSelection[0][1]}` === computertile.id ||
-                    `tile-${computerSelection[1][0]}-${computerSelection[1][1]}` === computertile.id
-                ) {
-                    console.log("Hit!!!")
+                let hasBeenClicked = false
+                if(hasBeenClicked) {
                 } else {
-                    console.log("Miss")
-                    console.log(computertile.id)
+                    hasBeenClicked = true
+                    if (`tile-${computerSelection[0][0]}-${computerSelection[0][1]}` === computertile.id ||
+                        `tile-${computerSelection[1][0]}-${computerSelection[1][1]}` === computertile.id
+                    ) {
+                        numberOfHits += 1
+                    } else {
+                        console.log("Miss")
+                        console.log(computertile.id)
+                    }
+                    didPlayerWin()
                 }
             })
         }
@@ -144,6 +152,12 @@ const startGame = () => {
     }
 
     console.log(computerSelection)
+}
+
+const didPlayerWin = () => {
+    if (numberOfHits === winningScore) {
+        console.log("You Win!")
+    }
 }
 
 startGameBtn.addEventListener("click", startGame)
