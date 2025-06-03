@@ -14,6 +14,7 @@
     grid-template: repeat(5, 1fr) / repeat(5, 1fr);
     border: 2px solid #000;
     justify-self: center;
+    background-color: #000;
 }
 
 .computer-container {
@@ -26,6 +27,7 @@
     border: 2px solid #000;
     justify-self: center;
     transition: 2s;
+    background-color: #000;
 }
 
 .computer-board-transition {
@@ -54,8 +56,12 @@
     transition: .5s;
 }
 
+.green {
+    background-color: green;
+}
+
 .red {
-    background-color: red;
+    background-color: red
 }
 
 .grey {
