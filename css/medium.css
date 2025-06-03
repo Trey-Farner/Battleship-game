@@ -19,7 +19,8 @@
 
 .computer-container {
     width: 50%;
-    max-width: 700px;
+    min-width: 300px;
+    max-width: 525px;
     aspect-ratio: 1 / 1;
     display: grid;
     position: relative;
@@ -31,7 +32,7 @@
 }
 
 .computer-board-transition {
-    width: 40%;
+    width: 25%;
     display: grid;
     -webkit-transition: 3s;
     -moz-transition: 3s;

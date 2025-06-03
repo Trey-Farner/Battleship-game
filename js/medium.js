@@ -198,7 +198,7 @@ const computersTurn = () => {
             }
         }
     }, 1000)
-    console.log(lastKnownHit)
+    // console.log(lastKnownHit)
 }
 
 //determines if the tile has already been chosen or not
