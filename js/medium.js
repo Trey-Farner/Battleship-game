@@ -4,9 +4,9 @@ const mediumGrid = document.getElementById("med-container")
 const resetSelectionBtn = document.getElementById("reset-selection-btn")
 const green = document.getElementsByClassName("green")
 let medGrid = []
-let row = 5
-let col = 5
-const ship = document.getElementById("ship")
+let gridRow = 5
+let gridCol = 5
+const ship = document.getElementById("destroyer")
 let shipSelect = false
 let shipPlacement = []
 let numberOfHits = 0
@@ -16,34 +16,76 @@ const turnIndicator = document.getElementById("turn-indicator")
 let computerPicks = []
 
 
+class Ship {
+    constructor(name, size) {
+        this.name = name;
+        this.size = size;
+        this.position = []
+        this.hits = 0;
+        this.isSunk = false;
+        this.isVertical = false;
+    }
+
+    hit() {
+        this.hits++;
+        if (this.hits >= this.position.length) {
+            this.isSunk = true
+        }
+    }
+
+    placement(row, col) {
+        for (let i = 0; i <= this.size - 1; i++) {
+            if (this.isVertical) {
+                this.position.push([row++, col])
+            } else {
+                this.position.push([row, col++])
+            }
+
+            //Check if ship is on the board
+            if (this.position[i][1] >= gridCol ||
+                this.position[i][0] >= gridRow
+            ) {
+                //if not remove the ship
+                this.position = []
+                while (green.length > 0) {
+                    green[0].classList.remove("green")
+                    shipPlacement = []
+                }
+                invalidPlacement.innerText = "Please place your ship in a valid location"
+            } else {
+                //if it is on the board, add to dom
+                document.getElementById(`tile-${this.position[i][0]}-${this.position[i][1]}`).classList.add("green")
+                invalidPlacement.innerText = ""
+            }
+        }
+    }
+}
+
+const destroyerShip = new Ship("destroyer", 2)
+console.log(ship.id === destroyerShip.name)
+
+
+
+
+
+
+
+
 //random number generators
 const randomNumber = () => Math.floor(Math.random() * 5)
 const randomNumberLimit = () => Math.floor(Math.random() * 4)
 
-//Boolean if placement of ship is off the board
-const validShipPlacement = () => {
-    if (shipPlacement[0].coordinates[0][0] > 4 || 
-        shipPlacement[0].coordinates[0][1] > 4 ||
-        shipPlacement[0].coordinates[1][0] > 4 ||
-        shipPlacement[0].coordinates[1][1] > 4) {
-            shipPlacement = []
-            invalidPlacement.innerText = "Please place your ship in a valid location"
-            return false
-    } else {
-        invalidPlacement.innerText = ""
-        return true
-    }
-}
+
 
 //Tells computer to place the ship and add DOM visualisation
+
+
+
 ship.addEventListener("click", () => {
     shipSelect ? shipSelect = false : shipSelect = true
     if (shipSelect) {
         ship.style.border = ".5rem solid orange"
-        while (green.length > 0) {
-        green[0].classList.remove("green")
-        shipPlacement = []
-    }
+        
     } else {
         ship.style.border = ".5rem solid #ffffff00"
     }
@@ -64,6 +106,8 @@ const generateTiles = () => {
 
             //event listener for logging the ship placement on board
             tile.addEventListener("click", () => {
+                destroyerShip.placement(i, j)
+                console.log(destroyerShip.position)
                 if (shipSelect) {
                     if (shipPlacement.length === 0) {
                         shipPlacement.push({
