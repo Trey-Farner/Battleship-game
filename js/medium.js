@@ -10,7 +10,7 @@ const ship = document.getElementById("destroyer")
 let shipSelect = false
 let shipPlacement = []
 let numberOfHits = 0
-let winningScore = 2
+const winningScore = 2
 const invalidPlacement = document.getElementById("invalid-placement")
 const turnIndicator = document.getElementById("turn-indicator")
 let computerPicks = []
@@ -22,13 +22,15 @@ class Ship {
         this.size = size;
         this.position = []
         this.hits = 0;
+        this.hitTiles = []
         this.isSunk = false;
-        this.isVertical = false;
+        this.isVertical = true;
     }
 
-    hit() {
+    hit(arr) {
         this.hits++;
-        if (this.hits >= this.position.length) {
+        this.hitTiles.push(arr)
+        if (this.hits >= this.size) {
             this.isSunk = true
         }
     }
@@ -47,10 +49,7 @@ class Ship {
             ) {
                 //if not remove the ship
                 this.position = []
-                while (green.length > 0) {
-                    green[0].classList.remove("green")
-                    shipPlacement = []
-                }
+                removeShip()
                 invalidPlacement.innerText = "Please place your ship in a valid location"
             } else {
                 //if it is on the board, add to dom
@@ -59,12 +58,33 @@ class Ship {
             }
         }
     }
+
+    computerPlacement(row, col) {
+        for (let i = 0; i <= this.size - 1; i++) {
+            if (this.isVertical) {
+                this.position.push([row++, col])
+            } else {
+                this.position.push([row, col++])
+            }
+
+            //Check if ship is on the board
+            if (this.position[i][1] >= gridCol ||
+                this.position[i][0] >= gridRow
+            ) {
+                //if not remove the ship
+                this.position = []
+                this.computerPlacement(randomNumber(), randomNumber())
+            }
+        }
+    }
 }
 
 const destroyerShip = new Ship("destroyer", 2)
 console.log(ship.id === destroyerShip.name)
 
-
+const fire = tile => {
+    if (tile[0][0] === tile) {}
+}
 
 
 
@@ -73,8 +93,13 @@ console.log(ship.id === destroyerShip.name)
 
 //random number generators
 const randomNumber = () => Math.floor(Math.random() * 5)
-const randomNumberLimit = () => Math.floor(Math.random() * 4)
-
+const randomNumberLimit = val => Math.floor(Math.random() * val)
+const removeShip = () => {
+    while (green.length > 0) {
+        green[0].classList.remove("green")
+        shipPlacement = []
+    }
+}
 
 
 //Tells computer to place the ship and add DOM visualisation
@@ -91,7 +116,6 @@ ship.addEventListener("click", () => {
     }
 })
 
-
 //Generate all tiles for player board
 const generateTiles = () => {
     // debugger
@@ -103,36 +127,16 @@ const generateTiles = () => {
             mediumGrid.appendChild(tile)
             tile.id = `tile-${i}-${j}`
             tile.classList.add("med-tiles")
-
+            
             //event listener for logging the ship placement on board
             tile.addEventListener("click", () => {
-                destroyerShip.placement(i, j)
-                console.log(destroyerShip.position)
-                if (shipSelect) {
-                    if (shipPlacement.length === 0) {
-                        shipPlacement.push({
-                            name: "small-ship",
-                            coordinates: [[i, j], [i, (j + 1)]]
-                        })
-                        console.log(shipPlacement)
-                    } else {
-                        shipPlacement = []
-                        shipPlacement.push({
-                            name: "small-ship",
-                            coordinates: [[i, j], [i, (j + 1)]]
-                        })
-                    }
-                    if (!validShipPlacement()) {
-
-                        return
-                    } else {
-                        console.log(shipPlacement[0])
-                        document.getElementById(`tile-${shipPlacement[0].coordinates[0][0]}-${shipPlacement[0].coordinates[0][1]}`).classList.add("green")
-                        document.getElementById(`tile-${shipPlacement[0].coordinates[1][0]}-${shipPlacement[0].coordinates[1][1]}`).classList.add("green")
-                        shipSelect = false
-                        ship.style.border = ".5rem solid #ffffff00"
-                        return
-                    }
+                console.log(destroyerShip.position.length)
+                if (destroyerShip.position.length === 0) { 
+                    destroyerShip.placement(i, j)
+                } else {
+                    destroyerShip.position = []
+                    removeShip()
+                    destroyerShip.placement(i, j)
                 }
             })
         }
@@ -142,9 +146,7 @@ const generateTiles = () => {
 
 //hard reset for the ship placement
 resetSelectionBtn.addEventListener("click", () => {
-    while (green.length > 0) {
-        green[0].classList.remove("green")
-    }
+    removeShip()
     ship.style.border = ".5rem solid #ffffff00"
 })
 
@@ -177,12 +179,12 @@ const startGame = () => {
                 if(hasBeenClicked) {
                     return
                 } else {
-                    if (`tile-${computerSelection[0][0]}-${computerSelection[0][1]}` === computertile.id ||
-                        `tile-${computerSelection[1][0]}-${computerSelection[1][1]}` === computertile.id
+                    if (`tile-${enemyDestroyer.position[0][0]}-${enemyDestroyer.position[0][1]}` === computertile.id ||
+                        `tile-${enemyDestroyer.position[1][0]}-${enemyDestroyer.position[1][1]}` === computertile.id
                     ) {
                         computertile.style.backgroundColor = "red"
                         hasBeenClicked = true
-                        numberOfHits += 1
+                        enemyDestroyer.hit()
                     } else {
                         computertile.style.backgroundColor = "grey"
                         hasBeenClicked = true
@@ -195,17 +197,19 @@ const startGame = () => {
     }
 
     //Computer ship placement
-    const isHorizontal = Math.floor(Math.random() * 2) === 0 ? true : false
-    let randomNumberA = randomNumber()
-    let randomNumberB = randomNumberLimit()
-    let computerSelection = []
-    if (isHorizontal) {
-        computerSelection = [[computerGrid[randomNumberA][randomNumberA], computerGrid[randomNumberB][randomNumberB]], [computerGrid[randomNumberA][randomNumberA], computerGrid[randomNumberB][randomNumberB + 1]]]
-    } else {
-        computerSelection = [[computerGrid[randomNumberB][randomNumberB], computerGrid[randomNumberA][randomNumberA]], [computerGrid[randomNumberB][randomNumberB + 1], computerGrid[randomNumberA][randomNumberA]]]
-    }
+    const enemyDestroyer = new Ship("Enemy Destroyer", 2)
+    enemyDestroyer.isVertical = Math.floor(Math.random() * 2) === 0 ? true : false
+    // let randomNumberB = randomNumberLimit(gridCol - 1)
+    enemyDestroyer.computerPlacement(randomNumber(), randomNumber())
+    // if (isHorizontal) {
+    //     computerSelection = [[computerGrid[randomNumberA][randomNumberA], computerGrid[randomNumberB][randomNumberB]], [computerGrid[randomNumberA][randomNumberA], computerGrid[randomNumberB][randomNumberB + 1]]]
+    // } else {
+    //     computerSelection = [[computerGrid[randomNumberB][randomNumberB], computerGrid[randomNumberA][randomNumberA]], [computerGrid[randomNumberB][randomNumberB + 1], computerGrid[randomNumberA][randomNumberA]]]
+    // }
 
-    console.log(computerSelection)
+
+
+console.log(enemyDestroyer.position)
 }
 
 //did the player win?
@@ -228,21 +232,21 @@ const computersTurn = () => {
     //now it needs to know if the tile matches a tile that the player chose
     //if not then we flip the turn over to the player
     //if so we run the next function so the computer selects one of four adjacent tiles that havent already been picked
-    setTimeout(() => {
-        if (matches(computersCurrentChoice)) {
-            computersTurn()
-        } else {
-            if (lastKnownHit.length === 0) {
+    if (matches(computersCurrentChoice)) {
+        computersTurn()
+    } else {
+        setTimeout(() => {
+            if (destroyerShip.hitTiles.length === 0) {
                 computerPicks.push(computersCurrentChoice)
                 console.log(computerPicks)
                 
-                isThisAHit(computersCurrentChoice)
+                isThisAHit(computersCurrentChoice, destroyerShip.position)
             } else {
-                isThisAHit(selectAdjacentTile(lastKnownHit))
+                isThisAHit(selectAdjacentTile(destroyerShip.hitTiles), destroyerShip.position)
             }
-        }
-    }, 1000)
-    // console.log(lastKnownHit)
+        }, 1000)
+        // console.log(lastKnownHit)
+    }
 }
 
 //determines if the tile has already been chosen or not
@@ -257,6 +261,13 @@ const matches = match => {
         }
     })
     return bool
+}
+
+//determines if the tile matches the ship no matter the size
+const compare2Ship = (shipCoords, arr) => {
+    shipCoords.forEach(arr => {
+        if (shipCoo) {}
+    })
 }
 
 
@@ -296,18 +307,39 @@ const selectAdjacentTile = hit => {
     }
 }
 
-const isThisAHit = arr => {
+
+const match2Ship = (arr1, arr2) => {
+    if(arr1.forEach(arr => {
+        JSON.stringify(arr) === JSON.stringify(arr2)
+    })) {}
+    let x = 0
+    let bool = false
+
+    for(let i = 0; i <= arr1.length; i++) {
+        for (let j = 0; j <= arr1[i]; j++) {
+            x = arr1[i][j]
+            if (x === arr2[0][0] && x)
+        }
+    }
+}
+    
+console.log(match2Ship([[1, 1], [1, 2]], [[1, 1]]))
+console.log(JSON.stringify([[1, 1]]))
+[[1, 1], [1, 2]].forEach((arr) => console.log(arr))
+
+
+
+
+const isThisAHit = (arr1, arr2) => {
     // debugger
-    if ((arr[0] === shipPlacement[0].coordinates[0][0] &&
-        arr[1] === shipPlacement[0].coordinates[0][1]) ||
-        (arr[0] === shipPlacement[0].coordinates[1][0] &&
-        arr[1] === shipPlacement[0].coordinates[1][1])
-    ) {
-        lastKnownHit.push(arr)
-        document.getElementById(`tile-${arr[0]}-${arr[1]}`).classList.remove("green")
-        document.getElementById(`tile-${arr[0]}-${arr[1]}`).classList.add("red")
+    console.log(arr1, arr2)
+    if (JSON.stringify(arr1) === JSON.stringify(arr2[0]) ||
+        JSON.stringify(arr1) === JSON.stringify(arr2[1])) {
+        destroyerShip.hit(arr1)
+        document.getElementById(`tile-${arr2[0]}-${arr2[1]}`).classList.remove("green")
+        document.getElementById(`tile-${arr2[0]}-${arr2[1]}`).classList.add("red")
     } else {
-        document.getElementById(`tile-${arr[0]}-${arr[1]}`).classList.add("grey")
+        document.getElementById(`tile-${arr1[0]}-${arr1[1]}`).classList.add("grey")
     }
 }
 
